@@ -33,21 +33,68 @@
 				- max: 3
 				- min: 1
 */
-
+#define OFFLINE_STATUS 0
+#define ONLINE_STATUS 1
 
 //Интерфэйс работы с сокетами / соединением
-//Функция создания соединения с сервером по заданным настройкам (с выводом ошибок при некорректно введённых данных)
+//+Функция создания соединения с сервером по заданным настройкам (с выводом ошибок при некорректно введённых данных)
 //Функция отправки сообщений (с выводом ошибки при отсутствии соединения с сервером)
 //Дополнительно: функция сжатия / архивирования сообщений (ПОМЕТКА: посмотреть и выбрать оптимальный метод сжатия для данного случая)
 class socket_connection {
 public:
 	//Настройки для TCP
+	//Стоит защитить данные переменные
 	int socket_domain = PF_INET;
 	int socket_type = SOCK_STREAM;
 	int socket_protocol = IPPROTO_TCP;
+	int socket_port = 1234; //Выбрать правильный порт для создания соединения
+	int socket_info = 0;
+	int connection_info = 0;
+	int connection_status = OFFLINE_STATUS;
+	string socket_type_string = "TCP";
+	string connection_ip = "128.0.0.1"; //Может быть ошибка
+	struct sockaddr_in socket_info_struct;
 
-	void set_TCP() { socket_type = SOCK_STREAM; socket_protocol = IPPROTO_TCP; }
-	void set_UDP() { socket_type = SOCK_DGRAM; socket_protocol = IPPROTO_UDP; }
+	void set_TCP() { socket_type = SOCK_STREAM; socket_protocol = IPPROTO_TCP; string socket_type_string = "TCP";}
+	void set_UDP() { socket_type = SOCK_DGRAM; socket_protocol = IPPROTO_UDP; string socket_type_string = "UDP";}
+	void set_port( int port ) { socket_port = port; }; //Добавить ограничение и сообщение об ошибке
+
+	void create_connection() {
+		socket_info = socket( socket_domain, socket_type, socket_protocol );
+		if( socket_info == -1 ) printf( "ERROR: Socket creation error." );
+		else {
+			printf( "Create %s socket.", socket_type_string );
+			memset( &socket_info_struct, 0, sizeof( socket_info_struct ) );
+			socket_info_struct.sin_family = socket_domain;
+			socket_info_struct.sin_port = htons(socket_port);
+			connection_info = inet_pton( socket_domain, connection_ip, &socket_info_struct.sin_addr );
+			if( connection_info < 0 ) {
+				printf( "ERROR: Uncorrect first parameter." );
+				close( socket_info );
+			} else if ( connection_info == 0 ) {
+				printf( "ERROR: Uncorrect second parameter." );
+				close( socket_info );
+			}
+			if( connect( socket_info, (struct sockaddr*)&socket_info_struct, sizeof(socket_info_struct) ) == -1 ) {
+				printf( "ERROR: Connection error." );
+				close( socket_info );
+			} else {
+				printf( "Client connect to the server." );
+				connection_status = ONLINE_STATUS;
+			}
+		}
+
+	}
+
+	void send_message(string message) { //Может быть ошибка
+
+	}
+
+	void shutdown_connection() {
+		shutdown( socket_info, SHUT_RDWR)
+		close( socket_info );
+		connection_status = OFFLINE_STATUS;
+	}
 }
 
 //Интерфейс работы с пользвателем
