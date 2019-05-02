@@ -93,6 +93,7 @@ public:
 	void shutdown_connection() {
 		shutdown( socket_info, SHUT_RDWR)
 		close( socket_info );
+		printf( "Client disconnect from the server." );
 		connection_status = OFFLINE_STATUS;
 	}
 }
