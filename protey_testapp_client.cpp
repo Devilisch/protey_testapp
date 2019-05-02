@@ -75,7 +75,7 @@ public:
 		socket_info = socket( socket_domain, socket_type, socket_protocol );
 		if( socket_info == -1 ) printf( "ERROR: Socket creation error.\n" );
 		else {
-			printf( "Create %s socket.", socket_type_string );
+			printf( "<Client>: Create %s socket.", socket_type_string );
 			memset( &socket_info_struct, 0, sizeof( socket_info_struct ) );
 			socket_info_struct.sin_family = socket_domain;
 			socket_info_struct.sin_port = htons(socket_port);
@@ -91,7 +91,7 @@ public:
 				printf( "ERROR: Connection error.\n" );
 				close( socket_info );
 			} else {
-				printf( "Client connect to the server.\n" );
+				printf( "<Client>: Connect to the server.\n" );
 				connection_status = ONLINE_STATUS;
 			}
 		}
@@ -106,7 +106,7 @@ public:
 	void shutdown_connection() {
 		shutdown( socket_info, SHUT_RDWR)
 		close( socket_info );
-		printf( "Client disconnect from the server.\n" );
+		printf( "<Client>: Disconnect from the server.\n" );
 		connection_status = OFFLINE_STATUS;
 	}
 }
