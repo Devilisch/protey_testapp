@@ -48,12 +48,44 @@
 #define ON 1
 
 
+//Учитывается ли последний элемент массива
+template<class iterator>
+auto max_element(iterator first_element, iterator last_element) {
+	auto result = *first_element;
+	if( first_element == last_element ) return result;
+	else {
+		first_element++;
+		for( ; first_element != last_element; first_element++ )
+			if( result < *first_element )
+				result = *first_element;
+		return result;
+	}
+
+}
+
+
+//Учитывается ли последний элемент массива
+template<class iterator>
+auto min_element(iterator first_element, iterator last_element) {
+	auto result = *first_element;
+	if( first_element == last_element ) return result;
+	else {
+		first_element++;
+		for( ; first_element != last_element; first_element++ )
+			if( result > *first_element )
+				result = *first_element;
+		return result;
+	}
+
+}
+
+
 
 //Интерфейс работы сервера
 //+Функция включения сервера (с выводом ошибок)
 //Функция ожидания сообщений от клиента
 //Функция обработки сообщения от клиента, а именно создания массива чисел, найденных в сообщении (использовать vector)
-//Функция нахождения суммы вектора цифр
+//+Функция нахождения суммы вектора цифр
 //Функция сортировки чисел в порядке убывания (возможно стоит воспользоваться встроенной функцией sort или qsort. Проверить возможно ли это сделать в рамках данного тестового задания)
 //Функция поиска максимального значения (возможно стоит воспользоваться встроенными функциями)
 //Функция поиска минимального значения (возможно стоит воспользоваться встроенными функциями)
@@ -72,6 +104,8 @@ public:
 	int connection_status = OFFLINE_STATUS;
 	string socket_type_string = "TCP";
 	string connection_ip = "127.0.0.1"; //Может быть ошибка
+	string buffer = "";
+	vector<int> buffer_vector;
 	struct sockaddr_in socket_info_struct;
 	//---
 
@@ -110,27 +144,51 @@ public:
 	}
 
 	void vector_sum() {
-		printf("- sum: %i\n", sum);
+		int sum = 0;
+		string info_message = "- sum: ";
+		for( int element : buffer_vector ) {
+			sum += element;
+		}
+		info_message += itoa(sum); //try string(&itoa(sum))
+		printf("<Server>: %s\n", info_message);
 		//Отправляем то же самое клиенту
 	}
 
 	void vector_sort() {
-		printf("- sort: ");
-		for(auto i : vec) {
-			printf("%i", vec);
+		sort( buffer_vector.begin(), buffer_vector.end(), greater<int> ); //Проверить на наличие ошибок в последнем параметре
+		string info_message = "- sort: ";
+		for(int element : buffer_vector) {
+			info_message += itoa(sum); //try string(&itoa(sum))
 		}
-		printf("\n");
+		printf("<Server>: %s\n", info_message);
 		//Отправляем то же самое клиенту
 	}
 
 	void vector_max() {
-		printf("- max: %i\n", max);
+		int max = max_element( buffer_vector.begin(), buffer_vector.end() );
+		string info_message = "- max: ";
+		info_message += itoa(max); //try string(&itoa(sum))
+		printf("<Server>: %s\n", info_message);		
 		//Отправляем то же самое клиенту
 	}
 
 	void vector_min() {
-		printf("- min: %i\n", min);
+		int min = min_element( buffer_vector.begin(), buffer_vector.end() );
+		string info_message = "- min: ";
+		info_message += itoa(min); //try string(&itoa(sum))
+		printf("<Server>: %s\n", info_message);
 		//Отправляем то же самое клиенту
+	}
+
+	void vector_statistics() {
+		if( buffer_vector.size() > 0 ) {
+			printf("<Server>: Info about numbers in the message:\n"); //Отправляем то же самое клиенту
+			vector_sum();
+			vector_sort();
+			vector_max();
+			vector_min();
+		}
+		buffer_vector.erase( buffer_vector.begin(), buffer_vector.end() );
 	}
 
 	void shutdown_connection() {
@@ -144,3 +202,30 @@ public:
 //Интерфейс работы с пользователем
 //Функция обработки входящих команд (с выводом ошибок при их некорректном вводе)
 //Список команд: start_server, shutdown_server
+class socket_interface : socket_connection {
+public:
+	int programm_status = ON;
+	void new_request(string req) {
+		switch(req){
+			case "-start_server": create_connection(); break;
+			case "-TCP": set_TCP(); break;
+			case "-UDP": set_UDP(); break;
+			case "-port": /*set_port(port); */ break;
+			case "-shutdown_server": shutdown_connection(); break;
+			case "-exit": programm_status = OFF; break;
+			default: printf( "Unknown request, try again.\n" );
+		}
+	}
+}
+
+
+
+int main(){
+	socket_interface connection;
+	string request;
+	while( connection.programm_status == ON ) {
+		scanf("%s", request);
+		connection.new_request(request);
+	}
+	return 0;
+}
