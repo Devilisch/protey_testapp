@@ -63,7 +63,7 @@ public:
 	int connection_info = 0;
 	int connection_status = OFFLINE_STATUS;
 	string socket_type_string = "TCP";
-	string connection_ip = "128.0.0.1"; //Может быть ошибка
+	string connection_ip = "127.0.0.1"; //Может быть ошибка
 	struct sockaddr_in socket_info_struct;
 	//---
 
@@ -86,8 +86,7 @@ public:
 			} else if ( connection_info == 0 ) {
 				printf( "ERROR: Uncorrect second parameter.\n" );
 				close( socket_info );
-			}
-			if( connect( socket_info, (struct sockaddr*)&socket_info_struct, sizeof(socket_info_struct) ) == -1 ) {
+			} else if( connect( socket_info, (struct sockaddr*)&socket_info_struct, sizeof(socket_info_struct) ) == -1 ) {
 				printf( "ERROR: Connection error.\n" );
 				close( socket_info );
 			} else {
