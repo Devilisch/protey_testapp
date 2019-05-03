@@ -126,9 +126,9 @@ public:
 			case "-connect": create_connection(); break;
 			case "-TCP": set_TCP(); break;
 			case "-UDP": set_UDP(); break;
-			case "-port": /*set_port(port); */ break;
+			case "-port": /*set_port(port);*/ break;
 			case "-send": /*send_message();*/ break;
-			case "-send_test1_message": send_message("Hello world! 132\n"); break;
+			case "-send_test1_message": send_message("Hello world! 132"); break;
 			case "-disconnect": shutdown_connection(); break;
 			case "-exit": programm_status = OFF; break;
 			default: printf( "Unknown request, try again.\n" );
