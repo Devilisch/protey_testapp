@@ -104,8 +104,11 @@ public:
 	int connection_status = OFFLINE_STATUS;
 	string socket_type_string = "TCP";
 	string connection_ip = "127.0.0.1"; //Может быть ошибка
-	string buffer = "";
+	int char_max_size = 100;
+	int buffer_size = 100; //Test
+	char *buffer = new char[char_max_size] {"ERROR: recv is not work."};
 	vector<int> buffer_vector;
+
 	struct sockaddr_in socket_info_struct;
 	//---
 
@@ -142,16 +145,32 @@ public:
 		//Приём и отправка сообщений клиенту 
 		//Добавить ограничения на размер сообщения и сделать вывод ошибок
 		//Если будет цикл, то возможно стоит пустить его отдельным процессом, чтобы иметь возможность управлять сервером
+		//Может принимать сообщение с длинной отправленного сообщения?
+		recv(connection_info, buffer, buffer_size, MSG_NOSIGNAL);
+		printf("<Client>: %c", buffer);
+		//create_vector_from_buffer_number();
+		//vector_statistics();
+		buffer = "ERROR: recv is not work.";
+	}
+
+	void create_vector_from_buffer_number() {
+		int i = 0;
+		while( buffer[i] = "\0" ){
+			if( buffer[i] > "0" && buffer[i] < "9" ) {
+				buffer_vector.push_back(buffer[i] - "0");
+			}
+			i++;
+		}
 	}
 
 	void vector_sum() {
 		int sum = 0;
-		string info_message = "- sum: ";
+		char *info_message = "- sum: ";
 		for( int element : buffer_vector ) {
 			sum += element;
 		}
 		info_message += itoa(sum); //try string(&itoa(sum))
-		printf("<Server>: %s\n", info_message);
+		printf("<Server>: %c\n", info_message);
 		//Отправляем то же самое клиенту
 	}
 
@@ -188,7 +207,7 @@ public:
 			vector_sort();
 			vector_max();
 			vector_min();
-		}
+		} else printf("<Server>: Missing numbers in received message.\n"); //Отправляем то же самое клиенту
 		buffer_vector.erase( buffer_vector.begin(), buffer_vector.end() );
 	}
 

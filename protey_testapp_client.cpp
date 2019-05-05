@@ -62,14 +62,17 @@ public:
 	int socket_info = 0;
 	int connection_info = 0;
 	int connection_status = OFFLINE_STATUS;
-	string socket_type_string = "TCP";
-	string connection_ip = "127.0.0.1"; //Может быть ошибка
+	char * socket_type_string = "TCP";
+	char * connection_ip = INADDR_LOOPBACK; //Может быть ошибка
+	int char_max_size = 100;
+	int buffer_size = 100; //Test
+	char *buffer = new char[char_max_size] {"ERROR: recv is not work."};
 	struct sockaddr_in socket_info_struct;
 	//---
 
-	void set_TCP() { socket_type = SOCK_STREAM; socket_protocol = IPPROTO_TCP; string socket_type_string = "TCP";}
-	void set_UDP() { socket_type = SOCK_DGRAM; socket_protocol = IPPROTO_UDP; string socket_type_string = "UDP";}
-	void set_port( int port ) { socket_port = port; }; //Добавить ограничение и сообщение об ошибке
+	void set_TCP() { socket_type = SOCK_STREAM; socket_protocol = IPPROTO_TCP; string socket_type_string = "TCP"; printf("<Client>: Using protocol - TCP");}
+	void set_UDP() { socket_type = SOCK_DGRAM; socket_protocol = IPPROTO_UDP; string socket_type_string = "UDP"; printf("<Client>: Using protocol - UDP");}
+	void set_port( int port ) { socket_port = port; printf("<Client>: Using port - %i", socket_port); }; //Добавить ограничение и сообщение об ошибке
 
 	void create_connection() {
 		socket_info = socket( socket_domain, socket_type, socket_protocol );
@@ -79,6 +82,7 @@ public:
 			memset( &socket_info_struct, 0, sizeof( socket_info_struct ) );
 			socket_info_struct.sin_family = socket_domain;
 			socket_info_struct.sin_port = htons(socket_port);
+			socket_info_struct.sin_addr.s_addr = htonl(connection_ip); //Возможно стоит сменить, подумать пересмотрев лекцию
 			connection_info = inet_pton( socket_domain, connection_ip, &socket_info_struct.sin_addr );
 			if( connection_info < 0 ) {
 				printf( "ERROR: Uncorrect first parameter.\n" );
@@ -97,9 +101,11 @@ public:
 
 	}
 
-	void send_message(string message) { //Может быть ошибка
+	void send_message(char * message) { //Может быть ошибка
 		//Отправка сообщения и приём ответа от сервера
 		//Добавить ограничения на размер сообщения и сделать вывод ошибок
+		send(socket_info, buffer, buffer_size, MSG_NOSIGNAL);
+		
 	}
 
 	void shutdown_connection() {
