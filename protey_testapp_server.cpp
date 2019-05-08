@@ -50,38 +50,7 @@
 #define ON 1
 
 using namespace std;
-/*
-//Учитывается ли последний элемент массива
-template<class iterator>
-auto max_element(iterator first_element, iterator last_element) {
-	auto result = *first_element;
-	if( first_element == last_element ) return result;
-	else {
-		first_element++;
-		for( ; first_element != last_element; first_element++ )
-			if( result < *first_element )
-				result = *first_element;
-		return result;
-	}
 
-}
-
-
-//Учитывается ли последний элемент массива
-template<class iterator>
-auto min_element(iterator first_element, iterator last_element) {
-	auto result = *first_element;
-	if( first_element == last_element ) return result;
-	else {
-		first_element++;
-		for( ; first_element != last_element; first_element++ )
-			if( result > *first_element )
-				result = *first_element;
-		return result;
-	}
-
-}
-*/
 
 
 template <class T> struct greater {
@@ -94,13 +63,13 @@ template <class T> struct greater {
 
 //Интерфейс работы сервера
 //+Функция включения сервера (с выводом ошибок)
-//Функция ожидания сообщений от клиента
-//Функция обработки сообщения от клиента, а именно создания массива чисел, найденных в сообщении (использовать vector)
+//+Функция ожидания сообщений от клиента
+//+Функция обработки сообщения от клиента, а именно создания массива чисел, найденных в сообщении (использовать vector)
 //+Функция нахождения суммы вектора цифр
-//Функция сортировки чисел в порядке убывания (возможно стоит воспользоваться встроенной функцией sort или qsort. Проверить возможно ли это сделать в рамках данного тестового задания)
-//Функция поиска максимального значения (возможно стоит воспользоваться встроенными функциями)
-//Функция поиска минимального значения (возможно стоит воспользоваться встроенными функциями)
-//Функция отправки сообщений клиенту (возможно стоит реализовать через отправку 2 сообщений: эхо-сообщение и сообщение со статистикой дополнительного задания)
+//+Функция сортировки чисел в порядке убывания (возможно стоит воспользоваться встроенной функцией sort или qsort. Проверить возможно ли это сделать в рамках данного тестового задания)
+//+Функция поиска максимального значения (возможно стоит воспользоваться встроенными функциями)
+//+Функция поиска минимального значения (возможно стоит воспользоваться встроенными функциями)
+//+Функция отправки сообщений клиенту (возможно стоит реализовать через отправку 2 сообщений: эхо-сообщение и сообщение со статистикой дополнительного задания)
 //+Функция отключения сервера
 class socket_connection {
 public:
@@ -146,8 +115,8 @@ public:
 					printf( "ERROR: Connection error.\n" );
 					close( socket_info );
 				} else { 
-					printf("<Server>: Connection accept.\n"); 
-					send(connection_info, (char*)"<Server>: Connection accept.\n", buffer_size, MSG_NOSIGNAL);
+					printf("<Server>: Connection accept. Waiting message from client.\n"); 
+					send(connection_info, (char*)"<Server>: Connection accept. Waiting message from client.\n", buffer_size, MSG_NOSIGNAL);
 					recv_message(); 
 					shutdown_connection(); 
 				}
@@ -156,11 +125,10 @@ public:
 		}
 	}
 
-	void recv_message() { //Может быть ошибка
+	void recv_message() {
 		//Приём и отправка сообщений клиенту 
 		//Добавить ограничения на размер сообщения и сделать вывод ошибок
 		//Если будет цикл, то возможно стоит пустить его отдельным процессом, чтобы иметь возможность управлять сервером
-		//Может принимать сообщение с длинной отправленного сообщения?
 		recv(connection_info, buffer, buffer_size, MSG_NOSIGNAL);
 		printf("<Client>: %s\n", buffer);
 		create_vector_from_buffer_number();

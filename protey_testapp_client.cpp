@@ -84,25 +84,17 @@ public:
 		else {
 			socket_info_struct.sin_family = socket_domain;
 			socket_info_struct.sin_port = htons(socket_port);
-			socket_info_struct.sin_addr.s_addr = htonl(connection_ip); //Возможно стоит сменить, подумать пересмотрев лекцию
-			/*connection_info = inet_pton( socket_domain, connection_ip, &socket_info_struct.sin_addr );
-			if( connection_info < 0 ) {
-				printf( "ERROR: Uncorrect first parameter.\n" );
-				close( socket_info );
-			} else if ( connection_info == 0 ) {
-				printf( "ERROR: Uncorrect second parameter.\n" );
-				close( socket_info );
-			} else*/ if( connect( socket_info, (struct sockaddr*)&socket_info_struct, sizeof(socket_info_struct) ) == -1 ) {
+			socket_info_struct.sin_addr.s_addr = htonl(connection_ip);
+
+			if( connect( socket_info, (struct sockaddr*)&socket_info_struct, sizeof(socket_info_struct) ) == -1 ) {
 				printf( "ERROR: Connection error.\n" );
 				close( socket_info );
 			} else {
 				printf( "<Client>: Connect to the server.\n" );
 				connection_status = ONLINE_STATUS;
 				
-				//send_message(buffer_test);
 				recv(socket_info, buffer, buffer_size, MSG_NOSIGNAL);
 				printf("%s", buffer);
-				//printf("\n%s", buffer);
 			}
 		}
 
@@ -115,11 +107,11 @@ public:
 		connection_status = OFFLINE_STATUS;
 	}
 
-	void send_message(char * message) { //Может быть ошибка
+	void send_message(char * message) {
 		//Отправка сообщения и приём ответа от сервера
 		//Добавить ограничения на размер сообщения и сделать вывод ошибок
 		send(socket_info, message, 100, MSG_NOSIGNAL);
-		printf("<Client>: send message \"%s\".\n", message);
+		printf("<Client>: Send message \"%s\".\n", message);
 		recv(socket_info, buffer, buffer_size, MSG_NOSIGNAL); printf("%s", buffer);
 		recv(socket_info, buffer, buffer_size, MSG_NOSIGNAL); printf("%s", buffer);
 		recv(socket_info, buffer, buffer_size, MSG_NOSIGNAL); printf("%s", buffer);
